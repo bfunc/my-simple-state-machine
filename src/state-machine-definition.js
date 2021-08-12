@@ -1,6 +1,34 @@
 export default {
-  id:'myMachine',
+  id: 'door',
+  initial: 'locked',
+  //initial: 'unlocked.closed',
+  states: {
+    locked: {
+      on: {
+        UNLOCK: 'unlocked',
+      },
+    },
+    unlocked: {
+      initial: 'closed',
+      states: {
+        closed: {
+          on: {
+            LOCK: 'locked',
+            OPEN: 'opened',
+          },
+        },
+        opened: {
+          on: { CLOSE: 'closed' },
+        },
+      },
+    },
+  },
+};
+
+export const original = {
+  id: 'myMachine',
   initialState: 'off',
+  context: {},
   off: {
     actions: {
       onEnter() {
@@ -37,4 +65,4 @@ export default {
       },
     },
   },
-}
+};

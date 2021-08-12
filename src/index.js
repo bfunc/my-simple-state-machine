@@ -1,13 +1,25 @@
-import createMachine from './state-machine-lib.js';
+import createMachine, { printCurrentState } from './state-machine-lib.js';
 import myMachine from './state-machine-definition.js';
 
 export default function testMachine(hours, minutes) {
   const machine = createMachine(myMachine);
 
-  let state = machine.value;
-  console.log(`current state: ${state}`);
+  printCurrentState(machine);
+
+  machine.transition('UNLOCK');
+  machine.transition('LOCK');
+  machine.transition('UNLOCK');
+  machine.transition('LOCK');
+  machine.transition('UNLOCK');
+ /*  machine.transition('OPEN');
+  machine.transition('CLOSE');
+  machine.transition('LOCK');
+  machine.transition('UNLOCK'); */
+
+  /*   machine.transition('BREAK');
+  machine.transition('BREAK');
+ */
+  /*   console.log(`current state: ${state}`);
   state = machine.transition(state, 'switch');
-  console.log(`current state: ${state}`);
-  state = machine.transition(state, 'switch');
-  console.log(`current state: ${state}`);
+  console.log(`current state: ${state}`); */
 }

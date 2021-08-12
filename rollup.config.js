@@ -7,13 +7,13 @@ export default [
 	{
 		input: 'src/index.js',
 		output: {
-			name: 'howLongUntilLunch',
+			name: 'myStateMachineLib',
 			file: pkg.browser,
 			format: 'umd'
 		},
 		plugins: [
-			resolve(), // so Rollup can find `ms`
-			commonjs() // so Rollup can convert `ms` to an ES module
+			resolve(), // so Rollup can find `underscore.get`
+			commonjs() // so Rollup can convert `underscore.get` to an ES module
 		]
 	},
 
@@ -25,7 +25,7 @@ export default [
 	// `file` and `format` for each target)
 	{
 		input: 'src/index.js',
-		external: ['ms'],
+		external: ['underscore.get'],
 		output: [
 			{ file: pkg.main, format: 'cjs' },
 			{ file: pkg.module, format: 'es' }
