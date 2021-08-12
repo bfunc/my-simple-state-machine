@@ -1,26 +1,50 @@
-import createMachine, { printCurrentState } from './state-machine-lib.js';
-import myMachine from './state-machine-definition.js';
+import { resolveState } from './helpers';
 
-export default function testMachine(hours, minutes) {
-  const machine = createMachine(myMachine);
+const isDev = true;
 
-  printCurrentState(machine);
+export default function createMachine(definition) {
+  const { initial } = definition;
+  const machine = {
+    value: initial,
+    transition(event) {
+      const currentState = machine.value;
+      const currentStateDefinition = resolveState(definition, currentState);
 
-  machine.transition('UNLOCK');
-  machine.transition('OPEN');
-  machine.transition('CLOSE');
-  machine.transition('LOCK');
-  machine.transition('UNLOCK');
-  machine.transition('LOCK');
-  machine.transition('UNLOCK');
-  machine.transition('OPEN');
-  machine.transition('CLOSE');
-  machine.transition('OPEN');
-  machine.transition('CLOSE');
-  machine.transition('LOCK');
-  machine.transition('LOCK');
+      // Inner machine error, kind of 500
+      if (!currentStateDefinition) {
+        // TODO - move to setState
+        throw new Error('Machine error, cannot find:', currentState);
+      }
 
-  /*   console.log(`current state: ${state}`);
-  state = machine.transition(state, 'switch');
-  console.log(`current state: ${state}`); */
+      isDev && console.log('>', event, currentStateDefinition);
+
+      let targetStateTransition;
+
+      // Got into nested scope
+      if (currentStateDefinition.states) {
+        const state = Object.values(currentStateDefinition.states).find(
+          ({ on = {} }) => on[event]
+        );
+
+        targetStateTransition = state && state.on[event];
+      } else {
+        // Simple flat state
+        targetStateTransition = currentStateDefinition?.on[event];
+      }
+
+      // Configuration error, kind of 400
+      if (!targetStateTransition) {
+        // TODO - extend error from MachineError class
+        throw new Error(`Bad transition ${event} from ${currentState}`);
+      }
+
+      // Update machine state, state can be nested: 'a.b.c'
+      machine.value = targetStateTransition;
+
+      isDev && console.log('<', machine.value);
+
+      return machine.value;
+    },
+  };
+  return machine;
 }
