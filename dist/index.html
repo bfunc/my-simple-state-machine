@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <body>
+    <script src="my-state-machine-lib.umd.js"></script>
+    <script>
+      var m = {
+        id: 'door',
+        initial: 'locked',
+        states: {
+          locked: {
+            on: {
+              UNLOCK: 'unlocked',
+            },
+          },
+          unlocked: {
+            initial: 'unlocked.closed',
+            states: {
+              closed: {
+                on: {
+                  LOCK: 'locked',
+                  OPEN: 'unlocked.opened',
+                },
+              },
+              opened: {
+                on: { CLOSE: 'unlocked.closed' },
+              },
+            },
+          },
+        },
+      };
+
+      const machine = createMachine(m);
+
+      machine.transition('UNLOCK');
+      machine.transition('OPEN');
+      machine.transition('CLOSE');
+      machine.transition('LOCK');
+      machine.transition('UNLOCK');
+    </script>
+  </body>
+</html>

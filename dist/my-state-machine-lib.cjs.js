@@ -1,7 +1,26 @@
-import { isDev } from './config.js';
-import { resolveState, getStateByEvent } from './helpers.js';
+'use strict';
 
-export default function createMachine(definition) {
+var underscore_get = require('underscore.get');
+
+const delimiter = '.';
+const statesProp = 'states';
+
+const getPathChunks = str => str.split(delimiter);
+
+const buildDefinitionPath = str => {
+  const chunks = getPathChunks(str);
+  return chunks.flatMap(chunk => [statesProp, chunk]).join('.');
+};
+
+const resolveState = (definition = {}, path = '') => {
+  const definitionPath = buildDefinitionPath(path);
+  return underscore_get.get(definition, definitionPath);
+};
+
+const getStateByEvent = (currentStateDefinition, event) =>
+  Object.values(currentStateDefinition.states).find(({ on = {} }) => on[event]);
+
+function createMachine(definition) {
   const { initial } = definition;
   const machine = {
     value: initial,
@@ -14,8 +33,6 @@ export default function createMachine(definition) {
         // TODO - move to setState
         throw new Error('Machine error, cannot find:', currentState);
       }
-
-      isDev && console.log('>', event, currentStateDefinition);
 
       let targetStateTransition;
 
@@ -38,11 +55,11 @@ export default function createMachine(definition) {
       // Update machine state, state can be nested: 'a.b.c'
       machine.value = targetStateTransition;
 
-      isDev && console.log('<', machine.value);
-
       return machine.value;
     },
   };
 
   return machine;
 }
+
+module.exports = createMachine;

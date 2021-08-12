@@ -1,5 +1,5 @@
 import { get } from 'underscore.get';
-import { delimiter, statesProp } from './config';
+import { delimiter, statesProp } from './config.js';
 
 export const getPathChunks = str => str.split(delimiter);
 
