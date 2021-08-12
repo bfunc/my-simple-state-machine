@@ -7,18 +7,19 @@ export default function testMachine(hours, minutes) {
   printCurrentState(machine);
 
   machine.transition('UNLOCK');
-  machine.transition('LOCK');
-  machine.transition('UNLOCK');
-  machine.transition('LOCK');
-  machine.transition('UNLOCK');
- /*  machine.transition('OPEN');
+  machine.transition('OPEN');
   machine.transition('CLOSE');
   machine.transition('LOCK');
-  machine.transition('UNLOCK'); */
+  machine.transition('UNLOCK');
+  machine.transition('LOCK');
+  machine.transition('UNLOCK');
+  machine.transition('OPEN');
+  machine.transition('CLOSE');
+  machine.transition('OPEN');
+  machine.transition('CLOSE');
+  machine.transition('LOCK');
+  machine.transition('LOCK');
 
-  /*   machine.transition('BREAK');
-  machine.transition('BREAK');
- */
   /*   console.log(`current state: ${state}`);
   state = machine.transition(state, 'switch');
   console.log(`current state: ${state}`); */

@@ -6,35 +6,40 @@ export default function createMachine(definition) {
     value: initial,
     transition(event) {
       const currentState = machine.value;
+
       const currentStateDefinition = resolveState(definition, currentState);
-
       if (!currentStateDefinition) {
-        throw new Error('Bad state ' + event + ' at ' + currentState);
-      }
-      console.log('> ', event, JSON.stringify(currentStateDefinition));
-
-      if (currentStateDefinition.states) {
-        const currentLocalState =
-          currentStateDefinition.value || currentStateDefinition.initial;
-
-        const destinationTransitionName =
-          currentStateDefinition.states[currentLocalState]?.on[event];
-
-        if (!destinationTransitionName) {
-          throw new Error(event + ' does not exist in ' + currentState);
-        }
-        machine.value = [destinationTransitionName, currentLocalState].join(
-          '.'
+        console.log(
+          ' current: ',
+          buildDefinitionPath(currentState),
+          ' > ',
+          event
         );
-        //  machine.value = { [currentLocalState]: destinationTransitionName };
-      } else {
-        const destinationTransitionName = currentStateDefinition?.on[event];
-        if (!destinationTransitionName) {
-          throw new Error(event + ' does not exist in ' + currentState);
-        }
-        machine.value = destinationTransitionName;
+        throw new Error('cannot select current state', currentState);
       }
-      console.log('< ', machine.value);
+
+      console.log(
+        event,
+        ' > ',
+        buildDefinitionPath(currentState),
+        JSON.stringify(currentStateDefinition)
+      );
+      let targetStateTransition;
+
+      if (currentStateDefinition.initial) {
+        const state = Object.values(currentStateDefinition.states).find(
+          ({ on = {} }) => on[event]
+        );
+        targetStateTransition = state && state.on[event];
+      } else {
+        targetStateTransition = currentStateDefinition?.on[event];
+      }
+      if (!targetStateTransition) {
+        throw new Error(`Bad transition ${event} from ${currentState}`);
+      }
+      machine.value = targetStateTransition;
+      console.log('<', machine.value);
+
       return machine.value;
     },
   };
@@ -54,7 +59,6 @@ const resolveState = (definition = {}, path = '') => {
   /* const definitionPath = buildDefinitionPath(
     isNested ? [key, path[key]].join('.') : path
   ); */
-  console.log('         > ', definitionPath);
   return get(definition, definitionPath);
 };
 
@@ -90,3 +94,37 @@ function original(stateMachineDefinition) {
   };
   return machine;
 }
+
+/* transition(event) {
+  const currentState = machine.value;
+  const currentStateDefinition = resolveState(definition, currentState);
+
+  if (!currentStateDefinition) {
+    throw new Error('Bad state ' + event + ' at ' + currentState);
+  }
+  console.log('> ', event, JSON.stringify(currentStateDefinition));
+
+  if (currentStateDefinition.states) {
+    const currentLocalState =
+      currentStateDefinition.value || currentStateDefinition.initial;
+
+    const destinationTransitionName =
+      currentStateDefinition.states[currentLocalState]?.on[event];
+
+    if (!destinationTransitionName) {
+      throw new Error(event + ' does not exist in ' + currentState);
+    }
+    machine.value = [destinationTransitionName, currentLocalState].join(
+      '.'
+    );
+    //  machine.value = { [currentLocalState]: destinationTransitionName };
+  } else {
+    const destinationTransitionName = currentStateDefinition?.on[event];
+    if (!destinationTransitionName) {
+      throw new Error(event + ' does not exist in ' + currentState);
+    }
+    machine.value = destinationTransitionName;
+  }
+  console.log('< ', machine.value);
+  return machine.value;
+}, */

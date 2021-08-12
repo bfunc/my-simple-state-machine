@@ -9,16 +9,16 @@ export default {
       },
     },
     unlocked: {
-      initial: 'closed',
+      initial: 'unlocked.closed',
       states: {
         closed: {
           on: {
             LOCK: 'locked',
-            OPEN: 'opened',
+            OPEN: 'unlocked.opened',
           },
         },
         opened: {
-          on: { CLOSE: 'closed' },
+          on: { CLOSE: 'unlocked.closed' },
         },
       },
     },
