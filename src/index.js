@@ -1,6 +1,5 @@
-import { resolveState } from './helpers';
-
-const isDev = true;
+import { isDev } from './config';
+import { resolveState, getStateByEvent } from './helpers';
 
 export default function createMachine(definition) {
   const { initial } = definition;
@@ -22,9 +21,7 @@ export default function createMachine(definition) {
 
       // Got into nested scope
       if (currentStateDefinition.states) {
-        const state = Object.values(currentStateDefinition.states).find(
-          ({ on = {} }) => on[event]
-        );
+        const state = getStateByEvent(currentStateDefinition, event);
 
         targetStateTransition = state && state.on[event];
       } else {
@@ -46,5 +43,6 @@ export default function createMachine(definition) {
       return machine.value;
     },
   };
+
   return machine;
 }

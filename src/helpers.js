@@ -16,6 +16,9 @@ export const resolveState = (definition = {}, path = '') => {
 export const printCurrentState = ({ value }) =>
   console.log(`current state: ${value}`);
 
+export const getStateByEvent = (currentStateDefinition, event) =>
+  Object.values(currentStateDefinition.states).find(({ on = {} }) => on[event]);
+
 // TODO - add to log
 export const getStateName = (definition = {}, transition = '') =>
   Object.values(definition.states).find(({ on }) => on[transition]);
